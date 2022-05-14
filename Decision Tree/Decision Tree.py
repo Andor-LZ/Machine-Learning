@@ -176,11 +176,17 @@ def createTree(dataSet, labels, featLabels):
 	bestFeatLabel = labels[bestFeat]							#最优特征的标签
 	featLabels.append(bestFeatLabel)
 	myTree = {bestFeatLabel:{}}									#根据最优特征的标签生成树
-	del(labels[bestFeat])										#删除已经使用特征标签
+	# del(labels[bestFeat])
+	#----------------------------------------------------------#
+	# 修改原因：用del()对labels处理会导致函数外的labels值发生变化,
+	# 在后续代码中可能会有隐患，建议在函数内复制一个新labels处理.
+	subLabels = labels[:]
+	del(subLabels[bestFeat])
+	#----------------------------------------------------------#
 	featValues = [example[bestFeat] for example in dataSet]		#得到训练集中所有最优特征的属性值
 	uniqueVals = set(featValues)								#去掉重复的属性值
-	for value in uniqueVals:									#遍历特征，创建决策树。
-		subLabels = labels[:]
+	for value in uniqueVals:
+		# subLabels = labels[:]    # 修改原因：如果进行第一个修改，则不需要该行代码
 		myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value), subLabels, featLabels)
         
 	return myTree
